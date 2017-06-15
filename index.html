@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<div id="chartContainer">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+  <script type="text/javascript">
+    var svg = dimple.newSvg("#chartContainer",1000,900);
+    var padding = 30;
+    svg.append("text")
+                      .attr("x", (svg[0][0].clientWidth / 2))
+                      .attr("y", 14)
+                      .attr("text-anchor", "middle").style("font-size", "16px")
+                      .style("font-weight", "bold")
+                      .data(["Relationship between Reading score and access to books."])
+                      .text(function (d) { return d; }); 
+
+    svg.selectAll("ExplanationOfChart")
+                      .data(["This graph gives the relationship between Reading score and number of books available to the student at home based PISA2012 data.",
+                        "The clickable legend on the right makes it possible to look at the data for each specified region.",
+                         " The graph at the bottom gives understanding between reading scores based on gender for each country in the specified region."])
+                      .enter()
+                      .append("text")
+                      .attr("x", (svg[0][0].clientWidth / 2))
+                      .attr("text-anchor", "middle")
+                      .attr("y", function (d, i) { return 30 + i * 12;})
+                      .attr("color", "Black")
+                      .style("font-size", "11px")
+                      .text(function (d) { return d; }); 
+
+
+
+    svg.selectAll("animationTitle")
+            .data(["Region Control"])
+            .enter()
+            .append("text")
+            .attr("x", 710)
+            .attr("y", padding + 40)
+            .style("font-size", "14px")
+            .style("font-weight", "bold")
+            .style("color", "Black")
+            .style("font-family", "sans-serif")
+            .text(function (d) { return d; } );
+
+    svg.selectAll("AnimationExplanation")
+            .data(["Click bar to select region and pause.",
+              " Click again to unpause."])
+            .enter()
+            .append("text")
+            .attr("x", 700)
+            .attr("y",  function (d, i) { return 88 + i * 12;})
+            .style("font-size", "11px")
+            //.style("font-weight", "bold")
+            .style("color", "Black")
+            .style("font-family", "sans-serif")
+            .text(function (d) { return d; } );
+    var yax;
+    d3.tsv("output.tsv", function(data) {
+      
+      /*
+        D3.js setup code
+      */
+
+          "use strict";
+
+          var frameDur = 3000;
+          var firstTick = true;
+         
+          
+          var indicator = new dimple.chart(svg, data);
+          
+          indicator.setBounds(700,100,200,331);
+          var y = indicator.addCategoryAxis("y","Region");
+          var defaultColor = indicator.defaultColors[0];
+          var indicatorColor = indicator.defaultColors[2];
+
+
+
+          y.addOrderRule("Region")
+
+          var x = indicator.addMeasureAxis("x", "meanScore")
+          x.hidden = true;
+
+          var s = indicator.addSeries(null, dimple.plot.bar);
+          s.aggregate = dimple.aggregateMethod.avg;
+          
+
+          s.addEventHandler("click", onClick);
+
+          indicator.draw();
+
+          y.titleShape.remove();
+
+          y.shapes.selectAll("line,path").remove();
+          
+      /*
+        Dimple.js Chart construction code
+      */
+         
+          
+          
+          var myChart = new dimple.chart(svg, data);
+
+          myChart.setBounds(60, 100, 550, 350);
+          var x = myChart.addCategoryAxis("x", "NumberOfBooks");
+          
+          
+          x.addOrderRule(["0-10 books","11-25 books","26-100 books","101-200 books","201-500 books","More than 500 books"]); 
+
+          yax = myChart.addMeasureAxis("y", "meanScore");
+          
+          yax.showGridlines = false;
+          
+          var series1 = myChart.addSeries("Country", dimple.plot.line);
+          series1.aggregate = dimple.aggregateMethod.avg;
+
+          
+          var series2 = myChart.addSeries("Country", dimple.plot.scatter);
+          series2.aggregate = dimple.aggregateMethod.avg;
+          
+          
+          var story = myChart.setStoryboard("Region",onTick);
+          
+          story.frameDuration = frameDur;
+
+          story.addOrderRule("Region");
+          
+          myChart.draw();
+          
+          x.titleShape.text("Number of books available at home");
+          yax.titleShape.text("Mean reading score for each country");
+          myChart.legends = [];
+
+          story.storyLabel.remove();
+
+          var legendChart = new dimple.chart(svg, data);
+          legendChart.setBounds(60, 600, 900, 100);
+          legendChart.addCategoryAxis("x", "Country");
+          var legendY = legendChart.addMeasureAxis("y", "meanScore")
+          legendY.showGridlines = false;
+
+          var legendSeries = legendChart.addSeries("Gender", dimple.plot.bar);
+          legendSeries.aggregate = dimple.aggregateMethod.avg;
+          var story2 = legendChart.setStoryboard("Region",onTick2);
+          
+          story2.frameDuration = frameDur;
+
+          legendChart.draw();
+          story2.storyLabel.remove();
+
+          function onTick2(e){
+            if(!firstTick){
+              this.chart.axes[1].titleShape.text("Mean Gender Score ");
+            }
+              firstTick = false;
+          };
+
+
+
+
+
+
+
+          
+         function onTick(e){
+          
+          
+          var filterData = dimple.filterData(data, "Region", e);
+          if (!firstTick) {
+            debugger;
+
+            var filterData = dimple.filterData(data, "Region", e);
+            
+
+
+            this.chart.axes[1].overrideMin = d3.min(filterData, function(d) { return d.meanScore; }) - 50;
+            this.chart.axes[0].titleShape.text("Number of books available at home");
+            this.chart.axes[1].titleShape.text("Mean reading score for each country");
+            
+            s.shapes
+                   .transition()
+                   .duration(frameDur/2)
+                   .style("fill", function (d) {return(d.y === e ? indicatorColor.fill : defaultColor.fill )})
+                   .style("stroke",function(d){return(d.y === e ? indicatorColor.stroke : defaultColor.stroke)})
+
+            }
+            firstTick =false;
+
+          };
+          
+         function onClick(e){
+          
+          story.pauseAnimation();
+          story2.pauseAnimation();
+          
+          if(e.yValue === story.getFrameValue()){
+           
+            story.startAnimation();
+            story2.startAnimation();
+          
+
+          } else {
+            
+            story.goToFrame(e.yValue);
+            story2.goToFrame(e.yValue);
+            
+            story.pauseAnimation();
+            story2.pauseAnimation();
+          }
+         };
+
+      });
+
+  </script>
+</div>
+</html>

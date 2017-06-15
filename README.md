@@ -1,0 +1,18 @@
+UDACITY DATA VISUALISATION PROJECT 
+
+GAURI PHATAK
+
+JUNE 2017
+
+DATASET USED: 
+Pisa2012 Dataset. Link to: https://docs.google.com/document/d/1w7KhqotVi5eoKE3I_AZHbsxdr-NmcWsLTIiZrpxWx4w/pub?embedded=true
+
+SUMMARY:
+
+DESIGN CHOICES:
+
+FEED BACK:
+
+RESOURCES:
+
+ADDITIONAL INFO:
