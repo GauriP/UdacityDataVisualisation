@@ -1,0 +1,92 @@
+---
+title: "DataViz"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readr)
+library('ggplot2')
+library('dplyr')
+library(readxl)
+pisa2012 <- read_csv("~/Desktop/Work_Study/Udacity_DataAnalystNano/DataViz/DataVizProjectPISAData/Data/pisa2012.csv")
+regions <- read_excel("~/Desktop/Work_Study/Udacity_DataAnalystNano/DataViz/DataVizProjectPISAData/Countries.xls")
+regions <- regions[,1:2]
+test <- pisa2012[,502:551]
+Howmanytest <- pisa2012[,62:75]
+countries <- pisa2012[,2]
+gender <- pisa2012[,13]
+rm(pisa2012)
+testRes <- sapply(test, as.numeric)
+Howmany <- sapply(Howmanytest, as.factor)
+rm(test)
+rm(Howmanytest)
+
+main <- cbind(countries, Howmany)
+main$CNT <- as.factor(main$CNT)
+main <- cbind(main, testRes)
+```
+
+```{r setup, include=FALSE}
+q <- qplot(main$PV1MATH, data = main, goem = 'histogram')
+q
+
+reading <- cbind(countries[,1], Howmany[,6], main[,16], gender[,1])
+
+reading$CNT <- as.factor(reading$CNT)
+reading$Gender <- as.factor(reading$ST04Q01)
+rm(Howmany)
+rm(gender)
+rm(testRes)
+rm(main)
+rm(countries)
+reading$Country <- reading$CNT
+reading <- subset(reading, select = -4)
+names(reading)[names(reading) == 'Howmany[, 6]'] <- 'NumberOfBooks'
+names(reading)[names(reading) == 'main[, 16]'] <- 'Score'
+#names(reading)[names(reading) == 'CNT'] <- 'Country'
+
+summary(reading)
+```
+
+```{r setup, include=FALSE}
+regions <- regions[-c(1,2,3,4),]
+colnames(regions)[1] <- "Country"
+colnames(regions)[2] <- "Region"
+grouped <-  group_by(reading, Country, NumberOfBooks, Gender)
+grouped <-  summarize(grouped, meanScore = mean(Score))
+grouped <- na.omit(grouped)
+rm(reading)
+```
+
+```{r setup, include=FALSE}
+
+final <- merge(grouped,regions, KEY = "Country")
+final$Region <- as.factor(final$Region)
+final$Country <- as.factor(final$Country)
+
+write_csv(final, "output.csv")
+
+sample <- grouped[1:336,]
+p <-  ggplot(aes(x = NumberOfBooks, y = meanScore, color = Gender, group = Gender), data =  sample) + geom_point() +geom_line()+facet_wrap(~ CNT, ncol = 5)
+p
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
