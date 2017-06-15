@@ -2,7 +2,7 @@
 title: "DataViz"
 output: html_document
 ---
-
+In this section of the code, we read the data file. and cherrypick the columns that we want to visualize based on previous reading of the pisa variable explanations provided in pisadict2012 . 
 ```{r setup, include=FALSE}
 library(readr)
 library('ggplot2')
@@ -26,9 +26,9 @@ main$CNT <- as.factor(main$CNT)
 main <- cbind(main, testRes)
 ```
 
+
+We further filter the required variables and delete the information we do not need. 
 ```{r setup, include=FALSE}
-q <- qplot(main$PV1MATH, data = main, goem = 'histogram')
-q
 
 reading <- cbind(countries[,1], Howmany[,6], main[,16], gender[,1])
 
@@ -58,6 +58,8 @@ grouped <- na.omit(grouped)
 rm(reading)
 ```
 
+
+In the code below we merge the main data with the regions of the world data gathered from the internet to form the final dataframe. Which is then written to a tsv file to be used in the D3.js visualisation.. 
 ```{r setup, include=FALSE}
 
 final <- merge(grouped,regions, KEY = "Country")
