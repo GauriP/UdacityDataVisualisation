@@ -5,7 +5,7 @@
 
 ##### JUNE 2017
 
-##DATASET USED: 
+## DATASET USED: 
 
 The main dataset with score values and country information:
 
@@ -39,12 +39,12 @@ In the 2nd graph we can see the mean reading score for girls and boys seperately
 capability for both the genders for each country in the dataset. 
 
 
-##DESIGN CHOICES:
+## DESIGN CHOICES:
 I wanted to create an interactive graph, but did not burden the page with too many variables. I wanted to understand how having access to books affects the reading scores for students from different countries. 
 Having data from all the countries might have been to crowded on one graph. Hence I decided to take advantage of the animation capabilities of dimple and divided the countries into different regions.
-##FEED BACK:
+## FEED BACK:
 
-##RESOURCES:
+## RESOURCES:
 
 http://dimplejs.org/advanced_examples_index.html
 
