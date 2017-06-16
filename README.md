@@ -1,9 +1,9 @@
-#UDACITY DATA VISUALISATION PROJECT
+# UDACITY DATA VISUALISATION PROJECT
 ## Understanding relationship between access to books and reading scores 
 
-####GAURI PHATAK
+#### GAURI PHATAK
 
-#####JUNE 2017
+##### JUNE 2017
 
 ##DATASET USED: 
 
