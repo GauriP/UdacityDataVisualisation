@@ -17,6 +17,11 @@ www.statvision.com/webinars/countries%20of%20the%20world.xls
 Final dataset used is in the output.tsv file. 
 
 
+## Visualisation:
+
+Visualisation can be found here:
+http://bl.ocks.org/GauriP/1f73388be5ff0d84601669ba8093899d
+
 ## Summary
 
 In the plot created we try and understand a relationship between the number of books students have access to at home 
