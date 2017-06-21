@@ -6,6 +6,11 @@
   <script type="text/javascript">
     var svg = dimple.newSvg("#chartContainer",1000,900);
     var padding = 30;
+
+    /* This part of the code adds the titles required for the 
+    different charts used in the visualisation*/
+
+    // The main title for the main graphs
     svg.append("text")
                       .attr("x", (svg[0][0].clientWidth / 2))
                       .attr("y", 14)
@@ -14,6 +19,9 @@
                       .data(["Relationship between Reading score and access to books."])
                       .text(function (d) { return d; }); 
 
+
+
+    // Summary introduction to the content in the visualisation.
     svg.selectAll("ExplanationOfChart")
                       .data(["This graph gives the relationship between Reading score and number of books available to the student at home based PISA2012 data.",
                         "The clickable legend on the right makes it possible to look at the data for each specified region.",
@@ -28,7 +36,7 @@
                       .text(function (d) { return d; }); 
 
 
-
+    // This title adds promt for the user to click and pause the animation and look at the regions in detail.
     svg.selectAll("animationTitle")
             .data(["Region Control"])
             .enter()
@@ -53,63 +61,69 @@
             .style("color", "Black")
             .style("font-family", "sans-serif")
             .text(function (d) { return d; } );
+    
+    //yaxis variable
     var yax;
+
+    // this function loads the data and creates the required charts for the visualisation.
     d3.tsv("output.tsv", function(data) {
-      
-      /*
-        D3.js setup code
-      */
 
           "use strict";
-
+          // Frame duration indicated the amount of time the frame will pause at each region 
           var frameDur = 3000;
           var firstTick = true;
          
-          
+          /* This chart creates and interactive graphics where the bar chart is given for each region of the world as specified in the data
+             We set up bounds for the chart and create an event handler which will be called if any bar on the graph is clicked. If the bar is clicked, 
+             the graphic will pause at the region which is selected through the click. and the event handler will take it form there. Please take a look at the event handler 
+             function below */
           var indicator = new dimple.chart(svg, data);
           
           indicator.setBounds(700,100,200,331);
           var y = indicator.addCategoryAxis("y","Region");
+
+          //Set the default color for when click on the bars.
           var defaultColor = indicator.defaultColors[0];
           var indicatorColor = indicator.defaultColors[2];
 
 
-
+          // This adds a order rule to the y axis, and arranges the bars based on descending value of the alphabet the region starts with.
           y.addOrderRule("Region")
-
+          // The x axis is the measure axis and measures the average mean score  of the  Reading score.
           var x = indicator.addMeasureAxis("x", "meanScore")
           x.hidden = true;
-
+          // This is where we indicate we want a bar chart and aggregate method for showing the  x axis data. 
           var s = indicator.addSeries(null, dimple.plot.bar);
           s.aggregate = dimple.aggregateMethod.avg;
           
-
+          // Setting up the event handler on click // Go to the onClick function
           s.addEventHandler("click", onClick);
-
+          // draw the graph.
           indicator.draw();
 
+          //remove the default title and y axis lines from the graph
           y.titleShape.remove();
-
+            
           y.shapes.selectAll("line,path").remove();
-          
-      /*
-        Dimple.js Chart construction code
-      */
-         
-          
-          
-          var myChart = new dimple.chart(svg, data);
 
+
+
+          /* This is the main chart Where we show the reading skills progression for ordinal variable which counts the number of books the child has access to at home.
+          This chart has a stroyboard attached to it. This story board updates every framesuration time to show different regions of the world. but when cicked pause on the bar chart the story pauses for the user to look at the chart in higher detail. */
+      
+          var myChart = new dimple.chart(svg, data);
+          // Set bounds for the chart
           myChart.setBounds(60, 100, 550, 350);
+          // Set number of books on the x axis
           var x = myChart.addCategoryAxis("x", "NumberOfBooks");
           
-          
+          //order rule for the number of books on x axis for ordinal variables. 
           x.addOrderRule(["0-10 books","11-25 books","26-100 books","101-200 books","201-500 books","More than 500 books"]); 
-
+          // Add mean score on the y axis
           yax = myChart.addMeasureAxis("y", "meanScore");
           
           yax.showGridlines = false;
-          
+          // Set the plot as line plot and superimpose dot plot on it to give more detail.
           var series1 = myChart.addSeries("Country", dimple.plot.line);
           series1.aggregate = dimple.aggregateMethod.avg;
 
@@ -117,7 +131,7 @@
           var series2 = myChart.addSeries("Country", dimple.plot.scatter);
           series2.aggregate = dimple.aggregateMethod.avg;
           
-          
+          // Set a story board for this plot which runs on each tick. The tick is defined by the frame duration. 
           var story = myChart.setStoryboard("Region",onTick);
           
           story.frameDuration = frameDur;
@@ -125,19 +139,20 @@
           story.addOrderRule("Region");
           
           myChart.draw();
-          
+          // Add title to the charts for x and y axis. 
           x.titleShape.text("Number of books available at home");
           yax.titleShape.text("Mean reading score for each country");
           myChart.legends = [];
 
           story.storyLabel.remove();
 
+          /* Adding a third chart which gives in idea of the difference in average score for each gender for the appropriate region on the screen. */
           var legendChart = new dimple.chart(svg, data);
           legendChart.setBounds(60, 600, 900, 100);
           legendChart.addCategoryAxis("x", "Country");
           var legendY = legendChart.addMeasureAxis("y", "meanScore")
           legendY.showGridlines = false;
-
+          // We create a 2nd story board with a  2nd on tick function as the event handler. This chages based on the duration specified which is same as before. To maintain syncronisation in the two tick fucntions I have added 
           var legendSeries = legendChart.addSeries("Gender", dimple.plot.bar);
           legendSeries.aggregate = dimple.aggregateMethod.avg;
           var story2 = legendChart.setStoryboard("Region",onTick2);
@@ -147,6 +162,9 @@
           legendChart.draw();
           story2.storyLabel.remove();
 
+
+          //This function manages the change in the graph for the gender chart at every tick of the frame duration. 
+
           function onTick2(e){
             if(!firstTick){
               this.chart.axes[1].titleShape.text("Mean Gender Score ");
@@ -155,12 +173,7 @@
           };
 
 
-
-
-
-
-
-          
+         // This function manages the graph frame duration for the main regions chart for the frame duration.
          function onTick(e){
           
           
@@ -186,7 +199,8 @@
             firstTick =false;
 
           };
-          
+
+          //  This function pauses and starts the anmations for the two graphs based on if the user has clicked the bar for a particular region. 
          function onClick(e){
           
           story.pauseAnimation();
