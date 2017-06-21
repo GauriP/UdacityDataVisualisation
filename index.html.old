@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<div id="chartContainer">
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+  <style>
+    circle.dimple-series-1{
+      fill: red;
+    }
+    h2{ text-align: center }
+  </style>
+  <div id="filter">
+      <b>Countries :</b>
+      </div>
+
+    <script type="text/javascript">
+    var svg = dimple.newSvg("#chartContainer",590,400);
+          
+
+     
+
+      function draw(data) {
+      
+      /*
+        D3.js setup code
+      */
+
+          "use strict";
+
+          var frameDur = 2000;
+          var firstTick = true;
+          var margin = 75,
+              width = 1400 - margin,
+              height = 600 - margin;
+
+          d3.select('body')
+            .append('h2')
+            .text('Mean test Scores VS access to books at home')
+          debugger;
+          /*var svg = d3.select("body")
+            .append("svg")
+              .attr("width", width + margin)
+              .attr("height", height + margin)
+            .append('g')
+                .attr('class','chart');*/
+          debugger;
+          
+          var indicator = new dimple.chart(svg, data);
+          
+          //indicator.setBounds(434,49,153,331);
+          var y = indicator.addCategoryAxis("y","Region");
+
+          var s = indicator.addSeries(null, dimple.plot.bar);
+          s.addEventHandler("click", onClick);
+         
+          indicator.draw();
+          y.shapes.selectAll("line,path").remove();
+          y.shapes.selectAll("text")
+                  .style("text-anchor","start")
+                  .style("font-size","11px")
+                  .attr("transform","translate(18,0.5");
+
+          
+      /*
+        Dimple.js Chart construction code
+      */
+          debugger;
+          var myChart = new dimple.chart(svg, data);
+          var x = myChart.addCategoryAxis("x", "NumberOfBooks");
+          //x.addOrder
+          x.addOrderRule(["0-10 books","11-25 books","26-100 books","101-200 books","201-500 books","More than 500 books"]); 
+          myChart.addMeasureAxis("y", "meanScore");
+          debugger;
+          //x.dateParseFormat = "%Y";
+          myChart.addSeries(null, dimple.plot.line);
+          //myseries.aggregate = dimple.aggregate;
+          myChart.addSeries(null, dimple.plot.scatter);
+          //var story = myChart.setStoryboard("Region",onTick);
+          //story.frameDuration = frameDur;
+          //story.addOrderRule("Region")
+          myChart.draw();
+
+         function onTick(e){
+          if (!firstTick) {
+            s.shapes
+                   .transition()
+                   .duration(frameDur/2)
+                   .style("fill", function (d) {return(d.y === e ? indicatorColor.fill : defaultColor.fill )})
+                   .style("stroke",function(d){return(d.y === e ? indicatorColor.stroke : defaultColor.stroke)});
+            }
+            firstTick =false;
+
+          };
+          
+      function onClick(e){
+          story.pauseAnimation();
+          if(e.yValue === story.getFrameValue()){
+            story.startAnimation();
+          } else {
+            story.goToFrame(e.yValue);
+            story.pauseAnimation();
+          }
+      };
+
+          
+          
+        };
+
+      </script>
+  </head>
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 (not dimple.js) to load the TSV file
+    and pass the contents of it to the draw function
+    */
+  d3.tsv("output.tsv", draw);
+  </script>
+</body>
+</div>
+</html>
