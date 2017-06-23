@@ -44,7 +44,7 @@ pushing the child to learn using books.
 ### Understanding relation between reading score for different genders
 
 In the 2nd graph we can see the mean reading score for girls and boys seperately. This gives us an idea about the reading 
-capability for both the genders for each country in the dataset. 
+capability for both the genders for each country in the dataset. In order to avoid over crowding, I have tied the main graph with this graph such that only the countries shown in the region in the main graph will be reflected in the gender graph. 
 
 ### Design decision: 
 I wanted to create an interactive graph, but did not burden the page with too many variables. I wanted to understand how having access to books affects the reading scores for students from different countries. 
